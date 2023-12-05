@@ -30,12 +30,20 @@ int nD[162] = {
 void m() {
   for (int tN = 0; tN < 162; tN++) {
     Key21 key = irController.getKey();
+    if(key == Key21::NONE)
+    {
     int noteD = 1000 / nD[tN];
     tone(5, melody[tN], noteD);
     int pBN = noteD * 1.3;
     delay(pBN);
     noTone(5);
-    if(key!=Key21::KEY_PREV) break;
+    }
+    
+    else if(key!=Key21::KEY_PREV)
+    {
+      Serial.println("音樂被中斷");
+      break;
+    }
   }
 
 }
