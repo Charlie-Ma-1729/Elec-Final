@@ -1,5 +1,21 @@
 #include <SimpleDHT.h> 
 
+#include <BluetoothSerial.h> 
+BluetoothSerial SerialBT; 
+
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <SimpleDHT.h>
+
+//請修改以下參數--------------------------------------------
+const char ssid[]     = "CMC"; //ssid:網路名稱
+const char password[] = "11223344"; //password:網路密碼
+//將原本ThingSpeak的網址換成IFTTT網址
+String url = "http://maker.ifttt.com/trigger/codo/with/key/i2q8B7hk"; //改成事件名稱和APIKEY
+
+//---------------------------------------------------------
+
+
 #define C3 131
 #define C3s 139
 #define D3 147
@@ -21,22 +37,22 @@
 
 DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200); // debounce time is 200ms
 
-#define ROW1 
-#define ROW2 
-#define ROW3 
-#define ROW4 
-#define ROW5 
-#define ROW6 
-#define ROW7 
-#define ROW8 
-#define COL1 
-#define COL2 
-#define COL3 
-#define COL4 
-#define COL5 
-#define COL6 
-#define COL7 
-#define COL8 
+#define ROW1 16
+#define ROW2 4
+#define ROW3 8
+#define ROW4 18
+#define ROW5 7
+#define ROW6 21
+#define ROW7 3
+#define ROW8 2
+#define COL1 19
+#define COL2 1
+#define COL3 5
+#define COL4 22
+#define COL5 15
+#define COL6 17 
+#define COL7 0
+#define COL8 6
 
 const int row[] = {
   ROW1, ROW2, ROW3, ROW4, ROW5, ROW6, ROW7, ROW8
@@ -104,7 +120,8 @@ int melody[162] = {
 int nD[162] = {
 6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,5,5,5,5,5,5,1,6,6,6,6,6,6,6,6,6,6,2,3,1,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,6,6,6,6,2,2,6,3,6,6,3,6,6,3,6,6,6,3,1
 };
- 
+
+int pinDHT11=36;
 SimpleDHT11 dht11;
 byte temperature = 0;
 byte humidity = 0;
@@ -113,6 +130,15 @@ byte humidity = 0;
 void setup() {
   Serial.begin(9600);
   irController.begin();
+  SerialBT.begin("Stuubid");
+  Serial.print("開始連線到無線網路SSID:");
+  Serial.println(ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(1000);
+  }
 }
 
 void loop() {
@@ -121,6 +147,9 @@ void loop() {
 
 
 void control() {
+  if (Serial.available()) {
+    SerialBT.write(Serial.read());
+  }
   Key21 key = irController.getKey();
   if (key != Key21::NONE) {
     switch (key) {
@@ -132,6 +161,7 @@ void control() {
       case Key21::KEY_CH:
         Serial.println("MODE");
         d();
+        
         // TODO: YOUR CONTROL
         break;
 
@@ -142,7 +172,7 @@ void control() {
 
       case Key21::KEY_PREV:
         Serial.println("⏯️");
-        m();
+        d();
         break;
 
       case Key21::KEY_NEXT:
@@ -258,15 +288,23 @@ void m() {
 }
 
 void d(){
-  do{
-    Key21 key = irController.getKey();
+  while(1){
+  Key21 key = irController.getKey();
+  if(key == Key21::NONE){
     DHT();
     if(temperature>30)showPattern(hot);
     else if(temperature<10)showPattern(cold);
     else showPattern(smile);
     delay(100);
-  }while(key == Key21::NONE);  
-  Serial.println("停止偵測");
+  }
+  else if(key!=Key21::KEY_PREV)
+  {
+    Serial.println("停止偵測");
+    break;
+  }
+  }
+  
+    
 }
 
 void showPattern(byte matrix[8][8]){
