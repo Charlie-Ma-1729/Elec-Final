@@ -543,6 +543,13 @@ void DHT() {
   if((int)temperature>30) testdraw_hot();
   else if((int)temperature<20) testdraw_cold();
   else testdraw_fish();
+
+  SerialBT.print((int)temperature);
+  SerialBT.print("*C, ");   
+  SerialBT.print((int)humidity);
+  SerialBT.println("%.");
+
+  delay(1000);  //休息1秒
   //開始傳送到IFTTT
   Serial.println("啟動網頁連線");
   HTTPClient http;
