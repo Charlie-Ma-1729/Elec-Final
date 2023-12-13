@@ -1,17 +1,17 @@
-#include <SimpleDHT.h> 
+#include <SimpleDHT.h>
 
-#include <BluetoothSerial.h> 
-BluetoothSerial SerialBT; 
+#include <BluetoothSerial.h>
+BluetoothSerial SerialBT;
 
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <SimpleDHT.h>
 
 //請修改以下參數--------------------------------------------
-const char ssid[]     = "CMC"; //ssid:網路名稱
-const char password[] = "11223344"; //password:網路密碼
+const char ssid[] = "CMC";           //ssid:網路名稱
+const char password[] = "11223344";  //password:網路密碼
 //將原本ThingSpeak的網址換成IFTTT網址
-String url = "http://maker.ifttt.com/trigger/codo/with/key/i2q8B7hk"; //改成事件名稱和APIKEY
+String url = "https://maker.ifttt.com/use/WNE8YfGNTdYT1SrpBkz_0";  //改成事件名稱和APIKEY
 
 //---------------------------------------------------------
 
@@ -33,9 +33,9 @@ String url = "http://maker.ifttt.com/trigger/codo/with/key/i2q8B7hk"; //改成�
 #define E4 330
 
 #include <DIYables_IRcontroller.h>
-#define IR_RECEIVER_PIN 19 // The ESP32 pin GPIO19 connected to IR controller
+#define IR_RECEIVER_PIN 19  // The ESP32 pin GPIO19 connected to IR controller
 
-DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200); // debounce time is 200ms
+DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200);  // debounce time is 200ms
 
 #define ROW1 16
 #define ROW2 4
@@ -50,79 +50,84 @@ DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200); // debounce time is
 #define COL3 5
 #define COL4 22
 #define COL5 15
-#define COL6 17 
+#define COL6 17
 #define COL7 0
 #define COL8 6
 
 const int row[] = {
   ROW1, ROW2, ROW3, ROW4, ROW5, ROW6, ROW7, ROW8
- };
+};
 
 const int col[] = {
-  COL1,COL2, COL3, COL4, COL5, COL6, COL7, COL8
- };
+  COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8
+};
 
 byte scan[8][8] = {
-{1,0,0,0,0,0,0,0},
-{0,1,0,0,0,0,0,0},
-{0,0,1,0,0,0,0,0},
-{0,0,0,1,0,0,0,0},
-{0,0,0,0,1,0,0,0},
-{0,0,0,0,0,1,0,0},
-{0,0,0,0,0,0,1,0},
-{0,0,0,0,0,0,0,1}
+  { 1, 0, 0, 0, 0, 0, 0, 0 },
+  { 0, 1, 0, 0, 0, 0, 0, 0 },
+  { 0, 0, 1, 0, 0, 0, 0, 0 },
+  { 0, 0, 0, 1, 0, 0, 0, 0 },
+  { 0, 0, 0, 0, 1, 0, 0, 0 },
+  { 0, 0, 0, 0, 0, 1, 0, 0 },
+  { 0, 0, 0, 0, 0, 0, 1, 0 },
+  { 0, 0, 0, 0, 0, 0, 0, 1 }
 };
 
 byte music[8][8] = {
-{1,1,1,1,0,1,1,1},
-{1,1,1,1,0,0,1,1},
-{1,1,1,1,0,1,0,1},
-{1,1,1,1,0,1,0,1},
-{1,1,1,1,0,1,1,1},
-{1,1,0,0,0,1,1,1},
-{1,0,0,0,0,1,1,1},
-{1,1,0,0,1,1,1,1}};
+  { 1, 1, 1, 1, 0, 1, 1, 1 },
+  { 1, 1, 1, 1, 0, 0, 1, 1 },
+  { 1, 1, 1, 1, 0, 1, 0, 1 },
+  { 1, 1, 1, 1, 0, 1, 0, 1 },
+  { 1, 1, 1, 1, 0, 1, 1, 1 },
+  { 1, 1, 0, 0, 0, 1, 1, 1 },
+  { 1, 0, 0, 0, 0, 1, 1, 1 },
+  { 1, 1, 0, 0, 1, 1, 1, 1 }
+};
 
 byte smile[8][8] = {
-{1,1,1,1,1,1,1,1},
-{1,1,0,1,1,0,1,1},
-{1,1,0,1,1,0,1,1},
-{1,1,0,1,1,0,1,1},
-{1,1,1,1,1,1,1,1},
-{1,0,1,1,1,1,0,1},
-{1,1,0,0,0,0,1,1},
-{1,1,1,1,1,1,1,1}};
+  { 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 0, 1, 1, 0, 1, 1 },
+  { 1, 1, 0, 1, 1, 0, 1, 1 },
+  { 1, 1, 0, 1, 1, 0, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 0, 1, 1, 1, 1, 0, 1 },
+  { 1, 1, 0, 0, 0, 0, 1, 1 },
+  { 1, 1, 1, 1, 1, 1, 1, 1 }
+};
 
 byte cold[8][8] = {
-{0,0,0,1,1,0,0,0},
-{0,0,1,0,0,1,0,0},
-{0,1,0,1,1,0,1,0},
-{1,0,1,0,0,1,0,1},
-{1,0,1,0,0,1,0,1},
-{0,1,0,1,1,0,1,0},
-{0,0,1,0,0,1,0,0},
-{0,0,0,1,1,0,0,0}};
+  { 0, 0, 0, 1, 1, 0, 0, 0 },
+  { 0, 0, 1, 0, 0, 1, 0, 0 },
+  { 0, 1, 0, 1, 1, 0, 1, 0 },
+  { 1, 0, 1, 0, 0, 1, 0, 1 },
+  { 1, 0, 1, 0, 0, 1, 0, 1 },
+  { 0, 1, 0, 1, 1, 0, 1, 0 },
+  { 0, 0, 1, 0, 0, 1, 0, 0 },
+  { 0, 0, 0, 1, 1, 0, 0, 0 }
+};
 
 byte hot[8][8] = {
-{1,1,1,1,1,1,1,1},
-{1,1,0,1,0,1,1,1},
-{1,1,1,0,1,0,1,1},
-{1,1,0,1,0,1,1,1},
-{1,1,1,0,1,0,1,1},
-{1,0,0,1,0,1,0,1},
-{0,1,1,1,1,1,1,0},
-{1,0,0,0,0,0,0,1}};
+  { 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 1, 0, 1, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 1, 0, 1, 1 },
+  { 1, 1, 0, 1, 0, 1, 1, 1 },
+  { 1, 1, 1, 0, 1, 0, 1, 1 },
+  { 1, 0, 0, 1, 0, 1, 0, 1 },
+  { 0, 1, 1, 1, 1, 1, 1, 0 },
+  { 1, 0, 0, 0, 0, 0, 0, 1 }
+};
 
 int melody[162] = {
-  E3, F3, G3, A, 0, E3, 0, G3, 0, G3s, A, 0, E3, F3, G3, A, 0, B3, 0, B3, 0, A3s, A, 0, D3, E3, F3, G3, 0, D3, 0, F3, 0, F3s, G3, 0, D3, E3, F3, G3, 0, A, 0, A, 0, G3s, G3, 0, E3, F3, G3, A, 0, E3,0, G3, 0, G3s, A, 0, E3, F3, G3, A, A3s, A, 0, G3s, A, B3, C4, D4, 0, A, B3, C4, D4, E4, C4,0, G3, E3, 0, G3, E3, 0, G3, E3, 0, G3, G3, A, G3, E3, F3, 0, F3, D3, 0, F3, D3, 0, F3, D3, 0, F3, A, B3, A, F3, E3, 0, G3, E3, 0, G3, E3, 0, G3, E3, 0, G3, C4, D4, C4, A3s, A, 0, C4, G3s, 0, C4, G3s, 0, C4, G3s, 0, G3s, G3s, C4, A3s, G3s, G3, 0, E3, F3, G3, A, E3, E3, F3, 0, E3, F3, 0, E3, G3,0, E3, D3s, D3, C3  
+  E3, F3, G3, A, 0, E3, 0, G3, 0, G3s, A, 0, E3, F3, G3, A, 0, B3, 0, B3, 0, A3s, A, 0, D3, E3, F3, G3, 0, D3, 0, F3, 0, F3s, G3, 0, D3, E3, F3, G3, 0, A, 0, A, 0, G3s, G3, 0, E3, F3, G3, A, 0, E3, 0, G3, 0, G3s, A, 0, E3, F3, G3, A, A3s, A, 0, G3s, A, B3, C4, D4, 0, A, B3, C4, D4, E4, C4, 0, G3, E3, 0, G3, E3, 0, G3, E3, 0, G3, G3, A, G3, E3, F3, 0, F3, D3, 0, F3, D3, 0, F3, D3, 0, F3, A, B3, A, F3, E3, 0, G3, E3, 0, G3, E3, 0, G3, E3, 0, G3, C4, D4, C4, A3s, A, 0, C4, G3s, 0, C4, G3s, 0, C4, G3s, 0, G3s, G3s, C4, A3s, G3s, G3, 0, E3, F3, G3, A, E3, E3, F3, 0, E3, F3, 0, E3, G3, 0, E3, D3s, D3, C3
 };
 
 int nD[162] = {
-6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,3,6,6,6,6,6,6,6,6,6,6,2,5,5,5,5,5,5,1,6,6,6,6,6,6,6,6,6,6,2,3,1,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,1,6,3,6,6,3,6,6,3,6,6,6,6,6,6,2,6,6,6,6,2,2,6,3,6,6,3,6,6,3,6,6,6,3,1
+  6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 5, 5, 5, 5, 5, 5, 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 2, 3, 1, 1, 6, 3, 6, 6, 3, 6, 6, 3, 6, 6, 6, 6, 6, 6, 2, 1, 6, 3, 6, 6, 3, 6, 6, 3, 6, 6, 6, 6, 6, 6, 2, 1, 6, 3, 6, 6, 3, 6, 6, 3, 6, 6, 6, 6, 6, 6, 2, 1, 6, 3, 6, 6, 3, 6, 6, 3, 6, 6, 6, 6, 6, 6, 2, 6, 6, 6, 6, 2, 2, 6, 3, 6, 6, 3, 6, 6, 3, 6, 6, 6, 3, 1
 };
 
-int pinDHT11=36;
-SimpleDHT11 dht11;
+int pinDHT11 = 15;  //假設DHT11接在腳位GPIO15
+//---------------------------------------------------------
+SimpleDHT11 dht11(pinDHT11);  //宣告SimpleDHT11物件
 byte temperature = 0;
 byte humidity = 0;
 
@@ -161,7 +166,7 @@ void control() {
       case Key21::KEY_CH:
         Serial.println("MODE");
         d();
-        
+
         // TODO: YOUR CONTROL
         break;
 
@@ -270,73 +275,87 @@ void control() {
 void m() {
   for (int tN = 0; tN < 162; tN++) {
     Key21 key = irController.getKey();
-    if(key == Key21::NONE)
-    {
-    showPattern(music);
-    int noteD = 1000 / nD[tN];
-    tone(5, melody[tN], noteD);
-    int pBN = noteD * 1.3;
-    delay(pBN);
-    noTone(5);
-    }
-    else if(key!=Key21::KEY_PREV)
-    {
+    if (key == Key21::NONE) {
+      showPattern(music);
+      int noteD = 1000 / nD[tN];
+      tone(5, melody[tN], noteD);
+      int pBN = noteD * 1.3;
+      delay(pBN);
+      noTone(5);
+    } else if (key != Key21::KEY_PREV) {
       Serial.println("音樂被中斷");
       break;
     }
   }
 }
 
-void d(){
-  while(1){
-  Key21 key = irController.getKey();
-  if(key == Key21::NONE){
-    DHT();
-    if(temperature>30)showPattern(hot);
-    else if(temperature<10)showPattern(cold);
-    else showPattern(smile);
-    delay(100);
+void d() {
+  while (1) {
+    Key21 key = irController.getKey();
+    if (key == Key21::NONE) {
+      DHT();
+      if (temperature > 30) showPattern(hot);
+      else if (temperature < 10) showPattern(cold);
+      else showPattern(smile);
+      delay(100);
+    } else if (key != Key21::KEY_PREV) {
+      Serial.println("停止偵測");
+      break;
+    }
   }
-  else if(key!=Key21::KEY_PREV)
-  {
-    Serial.println("停止偵測");
-    break;
-  }
-  }
-  
-    
 }
 
-void showPattern(byte matrix[8][8]){
-  for(byte i = 0; i < 8; i++){
-    for(byte j = 0; j < 8; j++){
+void showPattern(byte matrix[8][8]) {
+  for (byte i = 0; i < 8; i++) {
+    for (byte j = 0; j < 8; j++) {
       digitalWrite(row[j], 1 - scan[i][j]);
       digitalWrite(col[j], 1 - matrix[i][j]);
     }
-  for(byte j = 0; j < 8; j++){
-    digitalWrite(row[j], HIGH);
-    digitalWrite(col[j], LOW);
+    for (byte j = 0; j < 8; j++) {
+      digitalWrite(row[j], HIGH);
+      digitalWrite(col[j], LOW);
     }
-   }
+  }
 }
 
 void DHT() {
-    // start working...
-    Serial.println("=============");   
-    Serial.println("Sample DHT11 ……");   
-    // read without samples
+  // start working...
+  Serial.println("=============");
+  Serial.println("Sample DHT11 ……");
+  // read without samples
 
-    int err = SimpleDHTErrSuccess;
-    if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-       Serial.print("Read DHT11 failed, err="); Serial.println(err);delay(1000);
-       return;
-    }
-    Serial.print("Sample OK: ");   
-    Serial.print("Temperature = ");   
-    Serial.print((int)temperature);   
-    Serial.println("*C, ");
-    Serial.print("Humidity = ");   
-    Serial.print((int)humidity);   
-    Serial.print("%.");   
-    //delay(3000);  //每3秒顯示一次
+  int err = SimpleDHTErrSuccess;
+  if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+    Serial.print("Read DHT11 failed, err=");
+    Serial.println(err);
+    delay(1000);
+    return;
+  }
+  Serial.print("Sample OK: ");
+  Serial.print("Temperature = ");
+  Serial.print((int)temperature);
+  Serial.println("*C, ");
+  Serial.print("Humidity = ");
+  Serial.print((int)humidity);
+  Serial.print("%.");
+  //開始傳送到IFTTT
+  Serial.println("啟動網頁連線");
+  HTTPClient http;
+  //將溫度及濕度以http get參數方式補入IFTTT網址後方
+  String url1 = url + "?value1=" + (int)temperature + "&value2=" + (int)humidity;
+  //http client取得網頁內容
+  http.begin(url1);
+  int httpCode = http.GET();
+  if (httpCode == HTTP_CODE_OK) {
+    //讀取網頁內容到payload
+    String payload = http.getString();
+    //將內容顯示出來
+    Serial.print("網頁內容=");
+    Serial.println(payload);
+  } else {
+    //讀取失敗
+    Serial.println("網路傳送失敗");
+  }
+  http.end();
+  //delay(3000);  //每3秒顯示一次
 }
