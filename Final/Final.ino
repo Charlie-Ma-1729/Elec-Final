@@ -54,68 +54,32 @@ DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200);  // debounce time i
 #define COL7 0
 #define COL8 6
 
-const int row[] = {
-  ROW1, ROW2, ROW3, ROW4, ROW5, ROW6, ROW7, ROW8
-};
+#include <SPI.h> 
+#include <Wire.h> 
+#include <Adafruit_GFX.h> 
+#include <Adafruit_SSD1306.h> 
 
-const int col[] = {
-  COL1, COL2, COL3, COL4, COL5, COL6, COL7, COL8
-};
+#define SCREEN_WIDTH 128 // OLED 寬度像素
+#define SCREEN_HEIGHT 64 // OLED 高度像素
 
-byte scan[8][8] = {
-  { 1, 0, 0, 0, 0, 0, 0, 0 },
-  { 0, 1, 0, 0, 0, 0, 0, 0 },
-  { 0, 0, 1, 0, 0, 0, 0, 0 },
-  { 0, 0, 0, 1, 0, 0, 0, 0 },
-  { 0, 0, 0, 0, 1, 0, 0, 0 },
-  { 0, 0, 0, 0, 0, 1, 0, 0 },
-  { 0, 0, 0, 0, 0, 0, 1, 0 },
-  { 0, 0, 0, 0, 0, 0, 0, 1 }
-};
+// 設定OLED
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-byte music[8][8] = {
-  { 1, 1, 1, 1, 0, 1, 1, 1 },
-  { 1, 1, 1, 1, 0, 0, 1, 1 },
-  { 1, 1, 1, 1, 0, 1, 0, 1 },
-  { 1, 1, 1, 1, 0, 1, 0, 1 },
-  { 1, 1, 1, 1, 0, 1, 1, 1 },
-  { 1, 1, 0, 0, 0, 1, 1, 1 },
-  { 1, 0, 0, 0, 0, 1, 1, 1 },
-  { 1, 1, 0, 0, 1, 1, 1, 1 }
-};
 
-byte smile[8][8] = {
-  { 1, 1, 1, 1, 1, 1, 1, 1 },
-  { 1, 1, 0, 1, 1, 0, 1, 1 },
-  { 1, 1, 0, 1, 1, 0, 1, 1 },
-  { 1, 1, 0, 1, 1, 0, 1, 1 },
-  { 1, 1, 1, 1, 1, 1, 1, 1 },
-  { 1, 0, 1, 1, 1, 1, 0, 1 },
-  { 1, 1, 0, 0, 0, 0, 1, 1 },
-  { 1, 1, 1, 1, 1, 1, 1, 1 }
-};
+void testdrawstyles(void) {
+  
+  display.clearDisplay();
+  display.setTextSize(2);          // 設定文字大小
+  display.setTextColor(1);         // 1:OLED預設的顏色(這個會依該OLED的顏色來決定)
+  display.setCursor(5,0);          // 設定起始座標
+  display.print("Hello OLED");     // 要顯示的字串
+  display.setCursor(26,40);        // 設定起始座標
+  display.print("MiroTek");        // 要顯示的字串
+  display.display();               // 要有這行才會把文字顯示出來
+  delay(1000);
+}
 
-byte cold[8][8] = {
-  { 0, 0, 0, 1, 1, 0, 0, 0 },
-  { 0, 0, 1, 0, 0, 1, 0, 0 },
-  { 0, 1, 0, 1, 1, 0, 1, 0 },
-  { 1, 0, 1, 0, 0, 1, 0, 1 },
-  { 1, 0, 1, 0, 0, 1, 0, 1 },
-  { 0, 1, 0, 1, 1, 0, 1, 0 },
-  { 0, 0, 1, 0, 0, 1, 0, 0 },
-  { 0, 0, 0, 1, 1, 0, 0, 0 }
-};
-
-byte hot[8][8] = {
-  { 1, 1, 1, 1, 1, 1, 1, 1 },
-  { 1, 1, 0, 1, 0, 1, 1, 1 },
-  { 1, 1, 1, 0, 1, 0, 1, 1 },
-  { 1, 1, 0, 1, 0, 1, 1, 1 },
-  { 1, 1, 1, 0, 1, 0, 1, 1 },
-  { 1, 0, 0, 1, 0, 1, 0, 1 },
-  { 0, 1, 1, 1, 1, 1, 1, 0 },
-  { 1, 0, 0, 0, 0, 0, 0, 1 }
-};
 
 int melody[162] = {
   E3, F3, G3, A, 0, E3, 0, G3, 0, G3s, A, 0, E3, F3, G3, A, 0, B3, 0, B3, 0, A3s, A, 0, D3, E3, F3, G3, 0, D3, 0, F3, 0, F3s, G3, 0, D3, E3, F3, G3, 0, A, 0, A, 0, G3s, G3, 0, E3, F3, G3, A, 0, E3, 0, G3, 0, G3s, A, 0, E3, F3, G3, A, A3s, A, 0, G3s, A, B3, C4, D4, 0, A, B3, C4, D4, E4, C4, 0, G3, E3, 0, G3, E3, 0, G3, E3, 0, G3, G3, A, G3, E3, F3, 0, F3, D3, 0, F3, D3, 0, F3, D3, 0, F3, A, B3, A, F3, E3, 0, G3, E3, 0, G3, E3, 0, G3, E3, 0, G3, C4, D4, C4, A3s, A, 0, C4, G3s, 0, C4, G3s, 0, C4, G3s, 0, G3s, G3s, C4, A3s, G3s, G3, 0, E3, F3, G3, A, E3, E3, F3, 0, E3, F3, 0, E3, G3, 0, E3, D3s, D3, C3
@@ -133,7 +97,17 @@ byte humidity = 0;
 
 
 void setup() {
-  Serial.begin(9600);
+    Serial.begin(9600);
+
+  // 偵測是否安裝好OLED了
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // 一般1306 OLED的位址都是0x3C
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  display.clearDisplay(); // 清除畫面
+  testdrawstyles();    // 測試文字
+  delay(1000);
   irController.begin();
   SerialBT.begin("Stuubid");
   Serial.print("開始連線到無線網路SSID:");
@@ -165,7 +139,7 @@ void control() {
 
       case Key21::KEY_CH:
         Serial.println("MODE");
-        d();
+        
 
         // TODO: YOUR CONTROL
         break;
@@ -177,7 +151,7 @@ void control() {
 
       case Key21::KEY_PREV:
         Serial.println("⏯️");
-        d();
+        m();
         break;
 
       case Key21::KEY_NEXT:
@@ -289,34 +263,9 @@ void m() {
   }
 }
 
-void d() {
-  while (1) {
-    Key21 key = irController.getKey();
-    if (key == Key21::NONE) {
-      DHT();
-      if (temperature > 30) showPattern(hot);
-      else if (temperature < 10) showPattern(cold);
-      else showPattern(smile);
-      delay(100);
-    } else if (key != Key21::KEY_PREV) {
-      Serial.println("停止偵測");
-      break;
-    }
-  }
-}
 
-void showPattern(byte matrix[8][8]) {
-  for (byte i = 0; i < 8; i++) {
-    for (byte j = 0; j < 8; j++) {
-      digitalWrite(row[j], 1 - scan[i][j]);
-      digitalWrite(col[j], 1 - matrix[i][j]);
-    }
-    for (byte j = 0; j < 8; j++) {
-      digitalWrite(row[j], HIGH);
-      digitalWrite(col[j], LOW);
-    }
-  }
-}
+
+
 
 void DHT() {
   // start working...
