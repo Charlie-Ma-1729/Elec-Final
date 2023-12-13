@@ -37,22 +37,6 @@ String url = "https://maker.ifttt.com/use/WNE8YfGNTdYT1SrpBkz_0";  //改成事�
 
 DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200);  // debounce time is 200ms
 
-#define ROW1 16
-#define ROW2 4
-#define ROW3 8
-#define ROW4 18
-#define ROW5 7
-#define ROW6 21
-#define ROW7 3
-#define ROW8 2
-#define COL1 19
-#define COL2 1
-#define COL3 5
-#define COL4 22
-#define COL5 15
-#define COL6 17
-#define COL7 0
-#define COL8 6
 
 #include <SPI.h> 
 #include <Wire.h> 
@@ -250,7 +234,6 @@ void m() {
   for (int tN = 0; tN < 162; tN++) {
     Key21 key = irController.getKey();
     if (key == Key21::NONE) {
-      showPattern(music);
       int noteD = 1000 / nD[tN];
       tone(5, melody[tN], noteD);
       int pBN = noteD * 1.3;
