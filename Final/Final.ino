@@ -119,6 +119,13 @@ DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200);  // debounce time i
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+void testdrawbitmap(void) {
+  display.clearDisplay();
+  //顯示圖形，x,y,圖形文字,寬,高,1:OLED預設的顏色(這個會依該OLED的顏色來決定)
+  display.drawBitmap(0,16,-薩卡班_0005_music, 128, 48, 1);
+  display.display();  // 要有這行才會把文字顯示出來
+  delay(1000);
+}
 
 void testdrawstyles(void) {
   
@@ -159,7 +166,7 @@ void setup() {
   }
 
   display.clearDisplay(); // 清除畫面
-  testdrawstyles();    // 測試文字
+  testdrawbitmap();    // 測試文字
   delay(1000);
   irController.begin();
   SerialBT.begin("Stuubid");
