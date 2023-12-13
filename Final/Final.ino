@@ -11,7 +11,7 @@ BluetoothSerial SerialBT;
 const char ssid[] = "CMC";           //ssid:網路名稱
 const char password[] = "11223344";  //password:網路密碼
 //將原本ThingSpeak的網址換成IFTTT網址
-String url = "https://maker.ifttt.com/use/WNE8YfGNTdYT1SrpBkz_0";  //改成事件名稱和APIKEY
+String url = "http://maker.ifttt.com/trigger/codo/with/key/WNE8YfGNTdYT1SrpBkz_0";  //改成事件名稱和APIKEY
 
 //---------------------------------------------------------
 
@@ -44,10 +44,10 @@ DIYables_IRcontroller_21 irController(IR_RECEIVER_PIN, 200);  // debounce time i
 #include <Adafruit_SSD1306.h> 
 
 #define SCREEN_WIDTH 128 // OLED 寬度像素
-#define SCREEN_HEIGHT 64 // OLED 高度像素
+#define SCREEN_HEIGHT 64 // OLED度像素
 
 // 設定OLED
-#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
@@ -150,7 +150,7 @@ void control() {
 
       case Key21::KEY_VOL_MINUS:
         Serial.println("EQ");
-        // TODO: YOUR CONTROL
+        DHT();
         break;
 
       case Key21::KEY_VOL_PLUS:
@@ -251,25 +251,15 @@ void m() {
 
 
 void DHT() {
-  // start working...
-  Serial.println("=============");
-  Serial.println("Sample DHT11 ……");
-  // read without samples
-
   int err = SimpleDHTErrSuccess;
-  if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-    Serial.print("Read DHT11 failed, err=");
-    Serial.println(err);
-    delay(1000);
+  if ((err = dht11.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+    Serial.print("溫度計讀取失敗，錯誤碼="); Serial.println(err); delay(1000);
     return;
   }
-  Serial.print("Sample OK: ");
-  Serial.print("Temperature = ");
-  Serial.print((int)temperature);
-  Serial.println("*C, ");
-  Serial.print("Humidity = ");
-  Serial.print((int)humidity);
-  Serial.print("%.");
+  //讀取成功，將溫濕度顯示在序列視窗
+  Serial.print("溫度計讀取成功: ");
+  Serial.print((int)temperature); Serial.print(" *C, ");
+  Serial.print((int)humidity); Serial.println("%H");
   //開始傳送到IFTTT
   Serial.println("啟動網頁連線");
   HTTPClient http;
@@ -278,7 +268,7 @@ void DHT() {
   //http client取得網頁內容
   http.begin(url1);
   int httpCode = http.GET();
-  if (httpCode == HTTP_CODE_OK) {
+  if (httpCode == HTTP_CODE_OK)      {
     //讀取網頁內容到payload
     String payload = http.getString();
     //將內容顯示出來
@@ -289,5 +279,5 @@ void DHT() {
     Serial.println("網路傳送失敗");
   }
   http.end();
-  //delay(3000);  //每3秒顯示一次
+  delay(5000);
 }
