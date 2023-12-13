@@ -190,7 +190,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 void testdrawbitmap(void) {
   display.clearDisplay();
   //顯示圖形，x,y,圖形文字,寬,高,1:OLED預設的顏色(這個會依該OLED的顏色來決定)
-  display.drawBitmap(0,0,scar, 128, 64, 1);
+  display.drawBitmap(0,0,fish, 128, 64, 1);
   display.display();  // 要有這行才會把文字顯示出來
   delay(1000);
 }
