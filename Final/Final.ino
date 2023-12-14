@@ -12,6 +12,7 @@ const char ssid[] = "CMC";           //ssid:網路名稱
 const char password[] = "11223344";  //password:網路密碼
 //將原本ThingSpeak的網址換成IFTTT網址
 String url = "http://maker.ifttt.com/trigger/codo/with/key/WNE8YfGNTdYT1SrpBkz_0";  //改成事件名稱和APIKEY
+String url2 = "https://api.thingspeak.com/update?api_key=DFRJ64NSQL4JV0GC";
 
 //---------------------------------------------------------
 
@@ -557,6 +558,24 @@ void DHT() {
   String url1 = url + "?value1=" + (int)temperature + "&value2=" + (int)humidity;
   //http client取得網頁內容
   http.begin(url1);
+  int httpCode = http.GET();
+  if (httpCode == HTTP_CODE_OK)      {
+    //讀取網頁內容到payload
+    String payload = http.getString();
+    //將內容顯示出來
+    Serial.print("網頁內容=");
+    Serial.println(payload);
+  } else {
+    //讀取失敗
+    Serial.println("網路傳送失敗");
+  }
+  http.end();
+  Serial.println("啟動TS網頁連線");
+  HTTPClient http;
+  //將溫度及濕度以http get參數方式補入網址後方
+  String url3 = url2 + "&field1=" + (int)temperature + "&field2=" + (int)humidity;
+  //http client取得網頁內容
+  http.begin(url3);
   int httpCode = http.GET();
   if (httpCode == HTTP_CODE_OK)      {
     //讀取網頁內容到payload
