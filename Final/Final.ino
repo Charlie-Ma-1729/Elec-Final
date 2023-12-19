@@ -460,51 +460,61 @@ void control() {
       case Key21::KEY_0:
         Serial.println("0");
         // TODO: YOUR CONTROL
+        SerialBT.println("Hello");
         break;
 
       case Key21::KEY_1:
         Serial.println("1");
         // TODO: YOUR CONTROL
+        SerialBT.println("My name is Stuubid");
         break;
 
       case Key21::KEY_2:
         Serial.println("2");
         // TODO: YOUR CONTROL
+        SerialBT.println("How's the weather like?");
         break;
 
       case Key21::KEY_3:
         Serial.println("3");
         // TODO: YOUR CONTROL
+        SerialBT.println("LOL");
         break;
 
       case Key21::KEY_4:
         Serial.println("4");
         // TODO: YOUR CONTROL
+        SerialBT.println("WHAT????");
         break;
 
       case Key21::KEY_5:
         Serial.println("5");
         // TODO: YOUR CONTROL
+        SerialBT.println("Oh");
         break;
 
       case Key21::KEY_6:
         Serial.println("6");
         // TODO: YOUR CONTROL
+        SerialBT.println("idk");
         break;
 
       case Key21::KEY_7:
         Serial.println("7");
         // TODO: YOUR CONTROL
+        SerialBT.println("btw");
         break;
 
       case Key21::KEY_8:
         Serial.println("8");
         // TODO: YOUR CONTROL
+        SerialBT.println("Why??");
         break;
 
       case Key21::KEY_9:
         Serial.println("9");
         // TODO: YOUR CONTROL
+        SerialBT.println("bye");
         break;
 
       default:
